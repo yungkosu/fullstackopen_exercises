@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import Numbers from "./components/Numbers.jsx";
 import contactService from './services/contacts.js'
+import Notification from "./components/Notification.jsx";
+import './index.css'
 
 const FilterForm = ({filter, handleFilterField}) => {
     return (
@@ -28,6 +30,7 @@ const App = () => {
     const [newName, setNewName] = useState('')
     const [newPhone, setNewPhone] = useState('')
     const [filter, setFilter] = useState('')
+    const [notification, setNotification] = useState({message :null, type: null})
 
 
     useEffect(() => {
@@ -55,19 +58,33 @@ const App = () => {
              const updatedPerson = {...person, number: newPhone}
 
             if (windowConfirm) {
-             contactService
-                 .update(person.id, updatedPerson)
-                 .then(() => {
-                     setPersons(persons.map((person) => person.id === updatedPerson.id ? updatedPerson : person))
-                     setNewName('')
-                     setNewPhone('')
-                 })}
-            }
+                contactService
+                    .update(person.id, updatedPerson)
+                    .then(() => {
+                            setPersons(persons.map((person) => person.id === updatedPerson.id ? updatedPerson : person))
+                            setNotification({message: `${updatedPerson.name} has been updated`, type: 'success'})
+                            setTimeout(() => {
+                                {setNotification({message:null, type: null})}
+                            }, 5000)
+                            setNewName('')
+                            setNewPhone('')
+
+                        })
+                    .catch(() => {
+                        setNotification({message:`Information of ${updatedPerson.name} has already been deleted from the server`, type: 'error'})
+                        setTimeout(() => {
+                            {setNotification({message:null, type: null})}
+                        }, 5000)
+                    })
+            }}
          else {
              contactService
                  .create(personObject)
                  .then(res => {
                      setPersons(persons.concat(res))
+                     setNotification({message:`${personObject.name} has been added.`, type: 'success'})
+                     setTimeout(() => {setNotification({message:null, type: null})}, 5000)
+                     setNewName('')
                      setNewName('')
                      setNewPhone('')
                  })
@@ -96,12 +113,15 @@ const handlePhoneChange = (event) => {
                 .destroy(id)
                 .then(() => {
                     setPersons(persons.filter(person => person.id !== id))
+                    setNotification({message:`${person.name} has been deleted.`, type: 'success'})
+                    setTimeout(() => {setNotification({message:null, type: null})}, 5000)
                 })
         }
     }
     return (
         <div>
             <h2>Phonebook</h2>
+            <Notification message={notification.message} type={notification.type} />
             <FilterForm value={filter} handleFilterField={handleFilterField} />
             <h2>add a new</h2>
             <PersonForm name={newName} number={newPhone} handleNameChange={handleNameChange} handlePhoneChange={handlePhoneChange}  addNumber={addNumber}/>
