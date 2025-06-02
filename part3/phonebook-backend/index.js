@@ -26,6 +26,11 @@ let persons = [
 
 app.use(express.json())
 
+app.use((request, response, next) => {
+  request.requestTime = new Date();
+  next();
+});
+
 app.get('/', (request, response) => {
   response.send('<h1>Hello World!</h1>')
 })
@@ -45,25 +50,42 @@ app.get('/api/persons/:id', (request, response) => {
   }
 })
 
+app.get('/info', (request, response) => {
+  response.send(`<p>Phonebook has info for ${persons.length} people</p><p>${request.requestTime.toString()}</p>`)
+})
+
 const generateId = () => {
-  const maxId =
-    persons.length > 0 ? Math.max(...persons.map((n) => Number(n.id))) : 0
-  return String(maxId + 1)
+  let entry_id = Math.floor(Math.random() * 999999 -  100000 + 1)
+  return entry_id
 }
 
 app.post('/api/persons', (request, response) => {
   const body = request.body
 
-  if (!body.content) {
+  if (!body.name) {
     return response.status(400).json({
-      error: 'content missing',
+      error: 'contact name information missing',
     })
   }
 
+  if (!body.number) {
+    return response.status(400).json({
+      error: 'contact number information missing',
+    })
+  }
+
+  if (persons.find(person => person.name === request.body.name))
+   {
+    return response.status(409).json({
+      error: 'name must be unique'
+    })
+  }
+
+
   const person = {
     id: generateId(),
-    name: person.name,
-    number: person.number,
+    name: body.name,
+    number: body.number,
   }
 
   persons = persons.concat(person)
