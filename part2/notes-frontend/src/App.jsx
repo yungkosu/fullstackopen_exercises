@@ -9,7 +9,7 @@ const App = () => {
     const [notes, setNotes] = useState([])
     const [newNote, setNewNote] = useState("")
     const [showAll, setShowAll] = useState(true)
-    const [errorMessage, setErrorMessage] = useState('some error happened')
+    const [errorMessage, setErrorMessage] = useState(null)
 
 
     useEffect(() => {
@@ -53,8 +53,7 @@ const toggleImportanceOf = (id) => {
             setNotes(notes.map(note =>  note.id === id ? response.data :note))
         })
         .catch(error => {
-            setErrorMessage(`Note ${note.content} was already removed from the server`
-            )
+            setErrorMessage(`Note ${note.content} was already removed from the server`)
             setTimeout(() => {setErrorMessage(null)}, 5000)
             setNotes(notes.filter(n => n.id !== id))
         })
