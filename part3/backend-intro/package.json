@@ -4,13 +4,16 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "node --watch index.js"
+    "dev": "node --watch index.js",
+    "build:ui": "rm -rf dist && cd /Users/jakub.osuchowski/Documents/code/fullstackopen_exercises/part2/notes-frontend && npm run build && cp -r dist /Users/jakub.osuchowski/Documents/code/fullstackopen_exercises/part3/backend-intro",
+    "deploy": "fly deploy",
+    "deploy:full": "npm run build:ui && npm run deploy",
+    "logs:prod": "fly logs"
   },
   "author": "jakub",
   "license": "MIT",
   "description": "",
   "dependencies": {
-    "cors": "^2.8.5",
     "express": "^5.1.0"
   },
   "devDependencies": {
