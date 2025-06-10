@@ -5,3 +5,4 @@ part3/phonebook-backend/.dockerignore
 part3/phonebook-backend/fly.toml
 part3/phonebook-backend/dist/assets/index-Cvu05jp5.js
 part3/phonebook-backend/dist/assets/index-BApFGK6o.css
+.env
