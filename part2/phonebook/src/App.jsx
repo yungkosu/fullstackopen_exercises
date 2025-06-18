@@ -70,8 +70,9 @@ const App = () => {
                             setNewPhone('')
 
                         })
-                    .catch(() => {
-                        setNotification({message:`Information of ${updatedPerson.name} has already been deleted from the server`, type: 'error'})
+                    .catch((error) => {
+                        console.log(error.response)
+                        setNotification({message: error.response.data.error, type: 'error'})
                         setTimeout(() => {
                             {setNotification({message:null, type: null})}
                         }, 5000)
@@ -88,9 +89,16 @@ const App = () => {
                      setNewName('')
                      setNewPhone('')
                  })
-         }
-    }
-
+                .catch((error) => {
+                        console.log(error.response)
+                        setNotification({message: error.response.data.error, type: 'error'})
+                        setTimeout(() => {
+                            {setNotification({message:null, type: null})}
+                        }, 5000)
+                    })
+            }}       
+         
+    
 const handleNameChange = (event) => {
         setNewName(event.target.value)
 }
@@ -118,7 +126,7 @@ const handlePhoneChange = (event) => {
                 })
         }
     }
-    return (
+return (
         <div>
             <h2>Phonebook</h2>
             <Notification message={notification.message} type={notification.type} />
@@ -130,5 +138,4 @@ const handlePhoneChange = (event) => {
         </div>
     )
 }
-
 export default App
