@@ -1,6 +1,6 @@
 require('dotenv').config()
 const express = require('express')
-const morgan = require("morgan")
+const morgan = require('morgan')
 const app = express()
 const Person = require('./models/person')
 
@@ -9,7 +9,7 @@ const Person = require('./models/person')
 const errorHandler = (error, request, response, next) => {
   console.log(error.message)
 
-  if (error.name === "CastError") {
+  if (error.name === 'CastError') {
     return response.status(400).send({error: 'malformatted id'})
   } else if (error.name === 'ValidationError') {
     return response.status(400).send({error: error.message})
@@ -24,9 +24,9 @@ app.use(express.static('dist'))
 app.use(errorHandler)
 
 app.use((request, response, next) => {
-  request.requestTime = new Date();
-  next();
-});
+  request.requestTime = new Date()
+  next()
+})
 
 app.get('/', (request, response) => {
   response.send('<h1>Hello World!</h1>')
@@ -39,21 +39,21 @@ app.get('/api/persons', (request, response) => {
 })
 
 app.get('/api/persons/:id', (request, response, next) => {
-Person.findById(request.params.id)
-.then(person => {
-    if (person) {
-      response.json(person)
-    } else {
-      response.status(404).end()
-    }
-}).catch(error => next(error))
+  Person.findById(request.params.id)
+    .then(person => {
+      if (person) {
+        response.json(person)
+      } else {
+        response.status(404).end()
+      }
+    }).catch(error => next(error))
 })
 
 app.get('/api/info/', (request, response) => {
   Person.collection.countDocuments() 
-  .then(count => {
+    .then(count => {
       response.send(`<p>Phonebook has info for ${count} people</p><p>${request.requestTime.toString()}</p>`)
-  })
+    })
 })
 
 app.post('/api/persons', (request, response, next) => {
@@ -76,10 +76,10 @@ app.post('/api/persons', (request, response, next) => {
     number: body.number
   })
 
-person.save().then(savedPerson => {
-  response.json(savedPerson)
-})
-.catch(error => {next(error)})
+  person.save().then(savedPerson => {
+    response.json(savedPerson)
+  })
+    .catch(error => {next(error)})
 })
 
 
@@ -104,10 +104,10 @@ app.put('/api/persons/:id', (request, response, next) => {
 
 app.delete('/api/persons/:id', (request, response, next) => {
   Person.findByIdAndDelete(request.params.id)
-  .then(result => {
-  response.status(204).end()
-})
-.catch(error => next(error))
+    .then(result => {
+      response.status(204).end()
+    })
+    .catch(error => next(error))
 })
 
 
