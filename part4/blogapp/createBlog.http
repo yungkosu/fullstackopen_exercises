@@ -1,9 +1,11 @@
+### POST blog
 POST http://localhost:3003/api/blogs/
 Content-Type: application/json
 
 {
-  "title": "Blog test",
-  "author": "Kuba",
+  "title": "second blog",
+  "author": "Kuba O",
   "url": "www.chuj.pl",
-  "likes": 100
+  "likes": 400
 }
+###
