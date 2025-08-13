@@ -1,0 +1,8 @@
+POST http://localhost:3001/api/notes
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3QiLCJpZCI6IjY4OWM4ZjEwYmFjMDA2OWQxZGJlNmVmNCIsImlhdCI6MTc1NTA5NzQ5OH0.8Y6qs83DLxmXYQrHbCPjNK1rW0QkFf9kGZH5kJI1VYk
+
+{
+  "content": "App created after token",
+  "important": false
+}
