@@ -26,6 +26,10 @@ const handleLogin = async (event) => {
             username, password,
         })
 
+
+        window.localStorage.setItem(
+          'loggedNoteAppUser', JSON.stringify(user)
+        )
         
         noteService.setToken(user.token)
         setUser(user)
@@ -47,6 +51,15 @@ const handleLogin = async (event) => {
         })
     },[])
 
+    useEffect(() => {
+      const loggedUserJSON = window.localStorage(getItem('loggedNoteAppUser'))
+      if (loggedUserJSON) {
+        const user = JSON.parse(loggedUserJSON)
+        setUser(user)
+        noteService.setToken(user.token)
+      }
+
+    })
     const addNote = (event) => {
         event.preventDefault()
         const noteObject = {
