@@ -1,4 +1,4 @@
-import {useState, useEffect} from 'react'
+import {useState, useEffect, useRef} from 'react'
 import noteService from './services/notes';
 import Note from './components/Note'
 import Notification from "./components/Notification.jsx";
@@ -6,19 +6,36 @@ import Footer from "./components/Footer.jsx";
 import LoginForm from './components/LoginForm.jsx'
 import NoteForm from './components/NoteForm.jsx'
 import loginService from '../services/login.js'
+import Togglable from './components/Togglable.jsx'
 
 
 const App = () => {
     const [notes, setNotes] = useState([])
-    const [newNote, setNewNote] = useState("")
     const [showAll, setShowAll] = useState(true)
     const [errorMessage, setErrorMessage] = useState(null)
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
-    const [user, setUser] = useState(null)
+    const [user, setUser] = useState(null) 
 
+    useEffect(() => {
+        noteService
+            .getAll()
+            .then(res => {
+            setNotes(res.data)
+        })
+    },[])
 
-const handleLogin = async (event) => {
+    useEffect(() => {
+      const loggedUserJSON = window.localStorage.getItem('loggedNoteAppUser')
+      if (loggedUserJSON) {
+        const user = JSON.parse(loggedUserJSON)
+        setUser(user)
+        noteService.setToken(user.token)
+      }
+
+    }, [])
+
+    const handleLogin = async (event) => {
     event.preventDefault()
 
     try {
@@ -43,37 +60,13 @@ const handleLogin = async (event) => {
     }
 }
 
-    useEffect(() => {
-        noteService
-            .getAll()
-            .then(res => {
-            setNotes(res.data)
-        })
-    },[])
-
-    useEffect(() => {
-      const loggedUserJSON = window.localStorage(getItem('loggedNoteAppUser'))
-      if (loggedUserJSON) {
-        const user = JSON.parse(loggedUserJSON)
-        setUser(user)
-        noteService.setToken(user.token)
-      }
-
-    })
-    const addNote = (event) => {
-        event.preventDefault()
-        const noteObject = {
-            content: newNote,
-            important: Math.random() < 0.5,
-            id: String(notes.length + 1),
-        }
+    const addNote = (noteObject) => {
 
         try {
         noteService
             .create(noteObject)
             .then(savedNote => {
                 setNotes(notes.concat(savedNote))
-                setNewNote('')
             })} catch (error) {
               console.log(error)
             }
@@ -103,17 +96,42 @@ const toggleImportanceOf = (id) => {
 }
 
 
+ const loginForm = () => (
+    <Togglable buttonLabel="login">
+      <LoginForm
+        username={username}
+        password={password}
+        usernameChange={({ target }) => setUsername(target.value)}
+        passwordChange={({ target }) => setPassword(target.value)}
+        handleLogin={handleLogin}
+      />
+    </Togglable>
+  )
+
+
+  const noteFormRef = useRef()
+
+  const noteForm = () => (
+    <Togglable buttonLabel="new note" ref={noteFormRef}>
+      <NoteForm
+       createNote={addNote} />
+    </Togglable>
+  )
+
+
 return (
   <div>
     <h1>Notes</h1>
     <Notification message={errorMessage} />
 
-    {user === null ? (
-      <LoginForm handleLogin={handleLogin} username={username} password={password} usernameChange={({ target }) => setUsername(target.value)} passwordChange={({ target }) => setPassword(target.value)}/>
-    ) : (
+     {!user && loginForm()}
+      {user && (
+        <div>
+          <p>{user.name} logged in</p>
+          {noteForm()}
+        </div>
+      )}
       <div>
-        <p>{user.name} logged in</p>
-        {<NoteForm addNote={addNote} handleNoteChange={handleNoteChange}/>}
 
         <button onClick={() => setShowAll(!showAll)}>
           show {showAll ? 'important' : 'all'}
@@ -129,12 +147,7 @@ return (
           ))}
         </ul>
       </div>
-    )}
-
     <Footer />
   </div>
 )}
-
-
-
 export default App
