@@ -28,8 +28,8 @@ blogsRouter.post('/', tokenExtractor, userExtractor, async (request, response) =
   response.status(201).json(savedBlog)
 })
 
-blogsRouter.delete('/:id', async (request, response) => {
-  const token = tokenExtractor(request)
+blogsRouter.delete('/:id', tokenExtractor, userExtractor, async (request, response) => {
+  const token = request.token
   const decodedToken = jwt.verify(token, process.env.SECRET)
   
   if (!decodedToken.id) {

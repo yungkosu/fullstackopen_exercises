@@ -130,10 +130,31 @@ const loginForm = () => (
     </Togglable>
   )
 
+
+
+const removeBlog = async (blogObject) => {
+  try {   
+    await blogService.remove(blogObject.id)  // Change this - pass blogObject.id instead of blogObject
+    setBlogs(filteredBlogs => filteredBlogs.filter((blog) => blog.id !== blogObject.id))
+    setNotificationMessage(`blog ${blogObject.title} by ${blogObject.author} has been removed`)
+    setNotificationType('success')
+    setTimeout(() => {
+      setNotificationMessage(null)
+      setNotificationType(null)
+    }, 5000)
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+  
+   const sortedBlogs = [...blogs].sort((a,b) => b.likes - a.likes);
+
 return (
   <div>
     {!user ? <h2>log in to application</h2> : <h2>blogs</h2>}
-    < Notification message={notification} type={notificationType} />
+    <Notification message={notification} type={notificationType} />
+
     {!user && (
       <LoginForm
         handleLogin={handleLogin}
@@ -143,22 +164,28 @@ return (
         passwordChange={({ target }) => setPassword(target.value)}
       />
     )}
+
     {user && (
       <div>
         <div>
-        <p>{user.name} logged in</p><button onClick={handleLogout}>logout</button>
+          <p>{user.name} logged in</p>
+          <button onClick={handleLogout}>logout</button>
         </div>
         {blogForm()}
         <ul>
-          {blogs.map(blog => (
+          {sortedBlogs.map(blog => (
             <li key={blog.id}>
-              <Blog blog={blog} handleLike={addBlogLikes}/>
+              <Blog
+                blog={blog}
+                handleLike={addBlogLikes}
+                handleRemove={removeBlog}
+              />
             </li>
           ))}
         </ul>
       </div>
     )}
   </div>
-)
+);
 }
 export default App
